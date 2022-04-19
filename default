@@ -1,0 +1,75 @@
+server {
+    #proxy_cache cache;
+        #proxy_cache_valid 200 1s;
+    listen 8080;
+    listen [::]:8080;
+    root /home/site/wwwroot/public;
+
+    server_tokens off;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options DENY always;
+    add_header X-Download-Options noopen always;
+    add_header Content-Security-Policy "frame-ancestors 'none'" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+    # error_page 401 /401.php;
+    error_page 403 /403.php;
+    error_page 404 /404.php;
+    error_page 402 /4xx.php;
+    error_page 405 /4xx.php;
+    error_page 406 /4xx.php;
+    error_page 407 /4xx.php;
+    error_page 408 /4xx.php;
+    error_page 409 /4xx.php;
+    error_page 410 /4xx.php;
+    error_page 411 /4xx.php;
+    error_page 412 /4xx.php;
+    error_page 413 /4xx.php;
+    error_page 414 /4xx.php;
+    error_page 415 /4xx.php;
+    error_page 416 /4xx.php;
+    error_page 417 /4xx.php;
+    error_page 421 /4xx.php;
+    error_page 422 /4xx.php;
+    error_page 423 /4xx.php;
+    error_page 424 /4xx.php;
+    error_page 426 /4xx.php;
+    error_page 428 /4xx.php;
+    error_page 429 /4xx.php;
+    error_page 431 /4xx.php;
+    error_page 451 /4xx.php;
+    # error_page 500 /5xx.php;
+    error_page 501 /5xx.php;
+    error_page 502 /5xx.php;
+    error_page 503 /5xx.php;
+    error_page 504 /5xx.php;
+    error_page 505 /5xx.php;
+    error_page 506 /5xx.php;
+    error_page 507 /5xx.php;
+    error_page 508 /5xx.php;
+    error_page 510 /5xx.php;
+    error_page 511 /5xx.php;
+
+    absolute_redirect off;
+
+    location ~ \.php$ {
+        fastcgi_pass php-fpm:9000;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED $realpath_root$fastcgi_path_info;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        include fastcgi_params;
+        fastcgi_param SERVER_NAME $host;
+        fastcgi_intercept_errors on;
+        fastcgi_connect_timeout 300;
+        fastcgi_send_timeout    3600;
+        fastcgi_read_timeout    3600;
+        fastcgi_hide_header X-Powered-By;
+    }
+
+    location / {
+        try_files $uri $uri/ $uri.php$is_args$query_string;
+    }
+}
